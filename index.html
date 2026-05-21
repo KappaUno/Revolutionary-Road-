@@ -242,11 +242,12 @@ body::after{
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 </style>
 </head>
-<body>
+<body onload="initApiKey()">
 <div id="app">
 
+
 <!-- INTRO -->
-<div id="screen-intro" class="screen active">
+<div id="screen-intro" class="screen">
   <svg class="anarchy-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <radialGradient id="gg" cx="50%" cy="50%" r="50%">
@@ -431,6 +432,15 @@ body::after{
 </div>
 
 <script>
+
+// PROXY URL — inserisci qui il tuo Cloudflare Worker URL dopo averlo creato
+const PROXY_URL = 'https://revolutionaryroad.karontekillah.workers.dev';
+
+function initApiKey() {
+  // No API key needed — proxy handles it
+  showScreen('intro');
+}
+
 const G={
   name:'',faction:'',bg:'',
   hp:100,maxHp:100,inf:50,maxInf:100,mor:60,maxMor:100,
@@ -503,7 +513,7 @@ function addImg(prompt,cap){
 
 async function genImg(prompt,wrap,cap){
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
+    const r=await fetch(PROXY_URL,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,
         messages:[{role:'user',content:`Write a Stable Diffusion prompt (max 60 words) for this steampunk dystopian scene: "${prompt}". Style: dark industrial steampunk, 1920s meets cyberpunk, dramatic chiaroscuro lighting, coal smoke, brass machinery, oppressed workers. Return ONLY the prompt.`}]
@@ -558,7 +568,7 @@ async function callAI(prompt,first=false){
   clrChoices();showLoad();
   const msgs=[...G.hist,{role:'user',content:prompt}];
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
+    const r=await fetch(PROXY_URL,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,system:sysPrompt(),messages:msgs})
     });
